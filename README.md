@@ -1,6 +1,6 @@
 # ETH Gas Live
 
-![ETH Gas Live — live dashboard with network statistics](screenshot.png)
+![ETH Gas Live dashboard](screenshot.png)
 
 **Live Ethereum gas intelligence** on Logic Encoder — see what a send costs right now, compare three practical send tiers, and decide whether to submit or wait. Open [logicencoder.com/ethereum-gas-tracker/](https://logicencoder.com/ethereum-gas-tracker/) in the browser. Built for senders, swappers, and NFT minters who want more than a wallet’s single high/medium/low guess — especially when timing a transaction around congestion spikes.
 
@@ -29,7 +29,9 @@ The main app is a full-screen **gas tracker** with tabbed views (Live App, Today
 
 ### Network statistics
 
-Transactions per minute, congestion status, block utilization, fee competition, IPI/SPIKE scores, and trend indicators — so you see *why* fees moved, not only the number. The featured screenshot above shows this grid on the Live App tab.
+Transactions per minute, congestion status, block utilization, fee competition, IPI/SPIKE scores, and trend indicators — so you see *why* fees moved, not only the number.
+
+![Network statistics grid on the Live App tab](assets/network-statistics.png)
 
 ### Gas Intelligence Hub
 

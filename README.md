@@ -1,6 +1,6 @@
 # ETH Gas Live
 
-![ETH Gas Live dashboard](screenshot.png)
+![ETH Gas Live — live dashboard with network statistics](screenshot.png)
 
 **Live Ethereum gas intelligence** on Logic Encoder — see what a send costs right now, compare three practical send tiers, and decide whether to submit or wait. Open [logicencoder.com/ethereum-gas-tracker/](https://logicencoder.com/ethereum-gas-tracker/) in the browser. Built for senders, swappers, and NFT minters who want more than a wallet’s single high/medium/low guess — especially when timing a transaction around congestion spikes.
 
@@ -19,18 +19,57 @@
 
 ## Live dashboard
 
-The main app is a full-screen **gas tracker**:
+The main app is a full-screen **gas tracker** with tabbed views (Live App, Today, Why High?, Best Time, Calculator, Tx Costs, Swap Fees, Network, History, Percentiles). Data refreshes over **WebSocket** when available, with REST fallback so the page stays usable on strict networks.
 
-- **Three send tiers** — Base Route, Standard Way, Faster Inclusion — each with gwei, priority component, ETH and USD estimates, and a plain-language confirmation hint.
-- **Network context** — transactions per minute, congestion status, block utilization, fee competition, and spike indicators so you see *why* fees moved, not only the number.
-- **History charts** — selectable ranges (1h through 30d) for all tiers.
-- **Heatmap** — fee intensity by hour, shifted to your local timezone in the browser.
-- **Featured action costs** — estimated fees for common operations (swaps, approvals, NFT mints, etc.) in one scrollable list.
-- **Fee calculator** — enter gas units and get tier costs instantly.
-- **Send / wait guidance** — short prediction panel when waiting might save money.
-- **Gas Intelligence Hub** — nine topic tabs (fees today, best time to send, mempool, history, percentiles, and more) inside the same shell.
+### Three send tiers
 
-Data refreshes over **WebSocket** when available, with REST fallback so the page stays usable on strict networks.
+**Base Route**, **Standard Way**, and **Faster Inclusion** — each card shows gwei, priority component, ETH and USD estimates, and a plain-language confirmation hint.
+
+![Three send tiers — Base Route, Standard Way, Faster Inclusion](assets/send-tiers.png)
+
+### Network statistics
+
+Transactions per minute, congestion status, block utilization, fee competition, IPI/SPIKE scores, and trend indicators — so you see *why* fees moved, not only the number. The featured screenshot above shows this grid on the Live App tab.
+
+### Gas Intelligence Hub
+
+Short **send / wait guidance** when fees are elevated vs the rolling average, plus **smart timing** (best and worst hours) and a **network health score** in one panel.
+
+![Gas Intelligence Hub — send recommendation, timing, and network health](assets/gas-intelligence-hub.png)
+
+### Fee calculator
+
+Enter a gas limit (presets or manual), pick a tier or custom gwei, and get an instant ETH and USD estimate.
+
+![Fee calculator with tier presets and live Standard tracking](assets/fee-calculator.png)
+
+### Common transaction costs
+
+Real-time estimates for **ETH transfer**, **token transfer**, and **DEX swap** at all three send tiers — useful when you know the action but not the gas units.
+
+![Common transaction costs for transfer and swap actions](assets/transaction-costs.png)
+
+### Gas price history
+
+Selectable ranges (1h through 30d) chart **Base Route**, **Standard**, and **Faster Inclusion** alongside average block utilization, with FIP percentile readouts.
+
+![Gas price history chart with tier lines and utilization](assets/gas-price-history.png)
+
+### Gas heatmap
+
+Hourly average **Standard Way** gas over the last eight days — color-coded so you spot cheap windows at a glance (timezone follows the browser).
+
+![Gas heatmap — hourly Standard Way averages by day](assets/gas-heatmap.png)
+
+### Advanced statistics
+
+Three in-app tabs — **Overview** (current/min/max/avg/median per tier), **Detailed** (percentiles, base fee, live tx throughput, sample quality), and **Time Analysis** (best/worst hour plus hourly averages).
+
+![Advanced statistics — Overview tab](assets/advanced-stats-overview.png)
+
+![Advanced statistics — Detailed tab](assets/advanced-stats-detailed.png)
+
+![Advanced statistics — Time Analysis tab](assets/advanced-stats-time-analysis.png)
 
 ## SEO topic pages
 

@@ -91,6 +91,8 @@ Shortcode **`[eth_gas_dashboard]`** drops the same dashboard shell into any Word
 
 wp-admin **ETH Gas Live** includes Mission Control: backend health (WebSocket clients, fetch/push stats, database/cache indicators), configurable API base URL, WebSocket URL, SSR base, push key, and refresh interval — so operators can confirm the live site is fed without touching code.
 
+![Mission Control — runtime, WebSocket, fetch/push, and database health](assets/mission-control.png)
+
 Private code: [eth-gas-live-plugin](https://github.com/logicencoder/eth-gas-live-plugin) · live data [eth-gas-live-backend](https://github.com/logicencoder/eth-gas-live-backend)
 
 See [REPOS.md](REPOS.md).

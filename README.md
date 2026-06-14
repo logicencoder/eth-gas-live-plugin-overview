@@ -1,6 +1,6 @@
 # ETH Gas Live
 
-![ETH Gas Live dashboard](screenshot.png)
+![ETH Gas Live dashboard](assets/live-dashboard.png)
 
 **Live Ethereum gas intelligence** on Logic Encoder — see what a send costs right now, compare three practical send tiers, and decide whether to submit or wait. Open [logicencoder.com/ethereum-gas-tracker/](https://logicencoder.com/ethereum-gas-tracker/) in the browser. Built for senders, swappers, and NFT minters who want more than a wallet’s single high/medium/low guess — especially when timing a transaction around congestion spikes.
 

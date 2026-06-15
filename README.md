@@ -4,24 +4,36 @@
 
 **Live Ethereum gas intelligence** on Logic Encoder — see what a send costs right now, compare three practical send tiers, and decide whether to submit or wait. Open [logicencoder.com/ethereum-gas-tracker/](https://logicencoder.com/ethereum-gas-tracker/) in the browser. Built for senders, swappers, and NFT minters who want more than a wallet’s single high/medium/low guess — especially when timing a transaction around congestion spikes, listing mints, or bridge hops where a few gwei difference is real money at scale.
 
-The header shows **connection status**, **last update time**, and **live ETH/USD** so you know the numbers are fresh. A horizontal **topic nav** links to eleven SEO pages (fees today, best time, calculator, mempool, and more) without leaving the product chrome — each panel loads inside the app shell when you want depth, not a cold navigation to a static article.
+The header shows **connection status**, **last update time**, and **live ETH/USD** so you know the numbers are fresh. The page title and favicon react to current Standard gwei so a pinned tab doubles as an at-a-glance fee indicator without opening the full dashboard.
 
 ## Tech stack
 
 | Layer | Technologies |
 |-------|--------------|
-| WordPress plugin | PHP, WordPress REST API, shortcodes, wp-admin settings, LiteSpeed cache bypass |
+| WordPress plugin | PHP, WordPress REST API, shortcodes, wp-admin Mission Control, LiteSpeed cache bypass |
 | Public SPA | HTML, CSS, vanilla JavaScript (`gas_tracker.html`), Tailwind CSS, Chart.js |
-| Live backend | Python 3, FastAPI, uvicorn, web3.py, aiohttp, websockets, pydantic, orjson |
-| SEO SSR | Node.js, Express (`ssr-server.js`) |
-| Data | WordPress MySQL (options/transients), SQLite (gas history on backend) |
-| Realtime | WebSocket (`/ws/gas`), REST push ingest with API key, REST mirror on WordPress |
+| Live backend | Python 3, FastAPI, uvicorn, web3.py, aiohttp, websockets, pydantic, orjson, SQLite |
+| SEO data | WordPress local HTML templates with `{{PLACEHOLDER}}` keys filled from backend `GET /api/gas/ssr-data`; Node.js Express SSR on the backend for proxied crawler routes |
+| Data | WordPress MySQL (options/transients), SQLite gas history (~30 days) on the backend |
+| Realtime | WebSocket (`/ws/gas`), REST bootstrap and analytics endpoints, backend push to WordPress transient mirror |
 | Networking | Cloudflare tunnel, Ethereum JSON-RPC / mempool feeds |
 | Hosting | WordPress on shared hosting; Python and Node on self-hosted Linux servers |
 
 ## Live dashboard
 
-The main app is a full-screen **gas tracker** with the **Live App** as home base. Data refreshes over **WebSocket** when the browser can connect; if a corporate network blocks WS, REST polling plus the WordPress transient mirror still updates headline tiers every few seconds. The page title and favicon react to current Standard gwei so a pinned tab doubles as an at-a-glance fee indicator.
+The main app is a full-screen **gas tracker** with the **Live App** tab as home base. Data refreshes over **WebSocket** on every new block when the browser can connect; if a corporate network blocks WS, REST polling plus the WordPress transient mirror still updates headline tiers every few seconds. On first load the SPA bootstraps from REST so tier cards paint before the socket handshake completes.
+
+Backend gas math (three tiers, IPI, heatmap buckets, featured-action costs) never runs in PHP — WordPress serves the shell, injects API and WebSocket URLs, and mirrors the latest payload for fallback readers.
+
+### Topic navigation and in-app guides
+
+Below the header, a horizontal **topic nav** keeps you inside one app shell instead of cold-loading eleven separate articles.
+
+- **Live App** — the realtime dashboard (network grid, tiers, charts, sidebar tools).
+- **Topic tabs** — fees today, best time to send, mempool, calculator, transaction costs, swap fees, network status, price history, percentiles, and related guides. Labels come from the backend SEO hub manifest; clicking a tab loads that page’s HTML into an **in-app panel** via embed mode (`?gt_embed=1`) while live gas fields stay wired to the same WebSocket stream.
+- **Back to Live App** — one click hides the guide panel and restores the full dashboard.
+
+Each embedded guide is cached briefly in the browser so switching tabs feels instant; headline numbers inside the panel still sync from the live gas object. Crawlers and direct URL visitors get the same content as full WordPress pages with theme chrome — the in-app panel is the reader-friendly shortcut for people already on the tracker.
 
 ### Three send tiers
 
@@ -35,7 +47,7 @@ Ethereum post-EIP-1559 pricing is not one number — senders trade off cost vs i
 
 Each card shows **gwei** (base + priority breakdown), **ETH and USD estimates** for a reference transfer, and a plain-language **confirmation hint** (“~1 block”, “may take several blocks”, etc.). Cards pulse-update on every WebSocket tick so you watch fees move during a congestion spike without refreshing.
 
-When Standard is elevated vs its rolling average, the UI nudges you toward wait-or-send guidance in the Intelligence Hub (below) rather than leaving you to guess from a single red number.
+When Standard is elevated vs its rolling average, the **Gas Intelligence Hub** (sidebar) nudges you toward wait-or-send guidance rather than leaving you to guess from a single red number.
 
 ![Three send tiers — Base Route, Standard Way, Faster Inclusion](assets/send-tiers.png)
 
@@ -49,8 +61,8 @@ Above the tier cards, a **network statistics grid** answers *why* fees moved —
 - **Last block** — anchor for staleness checks.
 - **Avg / current block size and utilization** — how full blocks are; high utilization usually means higher competition for space.
 - **IPI (Inclusion Pressure Index) 0–100** — single stress score aligned with the Intelligence Hub.
-- **SPIKE score** and **fee competition** — how aggressive other senders are right now.
-- **Block speed pressure** — whether blocks are arriving faster or slower than target, affecting queue drain rate.
+- **SPIKE score** and **fee competition** — how aggressive other senders are right now (priority spread between high and median tips).
+- **Block speed pressure** — share of recent blocks above 90% full, affecting queue drain rate.
 
 Use this panel when Standard jumped but you are unsure if it is a blip (one fat block) or sustained load (climbing tx/min + high utilization).
 
@@ -58,14 +70,17 @@ Use this panel when Standard jumped but you are unsure if it is a blip (one fat 
 
 ### Gas Intelligence Hub
 
-Not everyone wants to read four charts before sending. The **Gas Intelligence Hub** compresses backend insight into one glass panel:
+The sidebar **Gas Intelligence Hub** compresses backend insight into one scrollable panel — for mobile readers who will not expand four charts before sending.
 
-- **Send / wait sentence** — plain language when fees are above or below recent norms (“good time to send” vs “consider waiting”).
-- **Best time (last 24h)** — cheapest hour window already observed today.
-- **Worst time (last 24h)** — hour to avoid if you can defer.
-- **Network health score** — 0–100 summary for mobile readers who only have screen space for one badge.
+**Insight** — one-sentence network readout tied to current IPI and spike state (plain language, not raw numbers only).
 
-The hub recomputes on every payload tick using the same **IPI** scale as the network grid, so guidance stays consistent across panels.
+**Smart Timing Insights** — **Best Time (Last 24h)** and **Worst Time (Last 24h)** cards with hour labels and average Standard gwei for each window. Use them to defer non-urgent sends to historically cheaper hours.
+
+**Send Recommendation** — actionable badge (send now vs consider waiting) with supporting copy, plus a comparison strip: **current Standard gwei and USD** vs **24h average**, and a **trend** line showing how far today sits from the mean. This is the same logic behind the one-line “send / wait” guidance, expanded for readers who want numbers behind the verdict.
+
+**Network Health Score** — **Current Network Stress** as a 0–100 score with a gradient bar (green → yellow → red) and a short advice line below. Pairs with IPI in the network grid — the hub version is optimized for quick glances on narrow screens.
+
+The hub recomputes on every payload tick using the same backend scoring as charts and SEO pages, so guidance stays consistent across panels.
 
 ![Gas Intelligence Hub — send recommendation, timing, and network health](assets/gas-intelligence-hub.png)
 
@@ -73,9 +88,9 @@ The hub recomputes on every payload tick using the same **IPI** scale as the net
 
 The **fee calculator** answers “how much will *my* transaction cost?” — not just the reference transfer on the tier cards.
 
-- **Gas limit presets** — ETH transfer, ERC-20 transfer, DEX swap, NFT mint, bridge deposit, and more; or type a custom limit if you know units from a contract simulation.
-- **Tier selector** — price from Base, Standard, Faster, or **custom gwei** for what-if scenarios.
-- **Live output** — instant ETH and USD fee estimate; tracks Standard automatically when you pick a tier.
+- **Gas limit presets** — ETH transfer, ERC-20 transfer, DEX swap, token approve, NFT mint, NFT sale; or type a custom limit if you know units from a contract simulation.
+- **Tier selector** — price from Base Route, Standard Way, Faster Inclusion, or **custom gwei** for what-if scenarios; “Auto (Standard)” tracks live Standard when you do not want to babysit the field.
+- **Live output** — instant ETH and USD fee estimate updating with each WebSocket tick when a tier is selected.
 
 Power users cross-check wallet simulation quotes; newcomers use presets so they do not have to know that a swap is ~180k gas.
 
@@ -83,25 +98,27 @@ Power users cross-check wallet simulation quotes; newcomers use presets so they 
 
 ### Common transaction costs
 
-The **featured transaction costs** grid shows real-time estimates for ~18 action types at **all three tiers** side by side — ETH transfer, token transfer, DEX swap, bridge, NFT mint, approval, and more.
+The **featured transaction costs** list shows real-time estimates for **nineteen action types** at **all three tiers** side by side — ETH transfer, token transfer, approve, DEX swap, NFT mint/sale, bridging, borrowing, lending, staking, unstaking, claim rewards, compound, liquidity add/remove, governance vote, multi-send, contract creation, and contract deployment.
 
-Each row is ETH + USD at Base / Standard / Faster so you compare “cheap send now” vs “pay for speed” on the *same action*. Useful when planning multi-step workflows (approve + swap + bridge) where you only care about total dollars, not gwei math.
+Each row displays the action name, **gas limit** used for the estimate, and **Base / Standard / Faster** columns in both USD and gwei. Useful when planning multi-step workflows (approve + swap + bridge) where you only care about total dollars, not manual gwei math. The scrollable list keeps priority actions (transfer, swap, approve) at the top.
 
 ![Common transaction costs for transfer and swap actions](assets/transaction-costs.png)
 
 ### Gas price history
 
-The **history chart** plots **Base Route**, **Standard**, and **Faster Inclusion** over selectable ranges — **1h, 6h, 24h, 7d, 14d, 30d**. A secondary axis overlays **average block utilization** so you correlate fee spikes with full blocks.
+The **history chart** plots **Base Route**, **Standard Way**, and **Faster Inclusion** over selectable ranges — **1h, 3h, 6h, 12h, 24h, 3 days, 7 days, 30 days**. A secondary axis overlays **average block utilization** so you correlate fee spikes with full blocks.
 
-**Faster-tier percentile band** (P10 / P90) shows how volatile the priority market is — wide band means tips swing wildly block to block. FIP percentile readouts in the chart footer tie back to the Percentiles SEO page for search landings.
+**Smoothing** — Raw, EMA (5), Median (5), or Clamp 99% for noisy priority markets. Short ranges (≤6h) stream live over WebSocket; longer ranges load from SQLite history on demand.
+
+**Faster-tier percentile band** — **FIP** readouts (P50, P70, and related chips in the chart footer) show how volatile the priority market is — wide spread means tips swing block to block. Ties back to the Percentiles SEO page for search landings.
 
 ![Gas price history chart with tier lines and utilization](assets/gas-price-history.png)
 
 ### Gas heatmap
 
-The **heatmap** colors **hourly average Standard Way gas** over the last **eight days**. Darker cells = cheaper hours; bright cells = expensive windows.
+The **heatmap** colors **hourly average Standard Way gas** over the last **seven days** (thirty days when the history range selector is on the 30-day window). Darker cells = cheaper hours; bright cells = expensive windows.
 
-Hours shift to **your browser timezone** — a European evening cheap window displays in local time, not UTC. Use it to schedule non-urgent sends (treasury payouts, batch claims) without setting a 3 a.m. alarm manually.
+Hours shift to **your browser timezone** — a European evening cheap window displays in local time, not UTC. Use it to schedule non-urgent sends (treasury payouts, batch claims) without setting a manual alarm. Hover cells show the exact hour and average gwei behind each color.
 
 ![Gas heatmap — hourly Standard Way averages by day](assets/gas-heatmap.png)
 
@@ -123,14 +140,17 @@ Three in-app sub-tabs for researchers who want tables, not only charts:
 
 ### Custom alerts
 
-Set a **gwei threshold** above or below Standard and optionally enable **browser notifications**. Alerts persist per browser session so overnight fee drops ping you without keeping the tab focused — handy for “notify me when fees drop below my target” workflows. Backend stores alert rows; the UI shows active rules and last trigger time.
+The **Gas Alerts** panel lets you set a **gwei threshold** and choose **Alert when gas goes OVER threshold** or **Alert when gas goes UNDER threshold** — useful for “notify me when fees drop enough to batch payouts” or “warn me before fees spike past my budget.”
+
+Alerts are stored per **browser session** on the backend; the list shows active rules with delete actions. When a rule fires, the UI shows an on-screen toast and, if you granted permission, a **browser notification** with current vs threshold gwei and USD equivalents. The WebSocket stream delivers alert events in realtime so you do not need to keep the tab focused.
 
 ## SEO topic pages
 
-Eleven indexable URLs on logicencoder.com are filled with **real-time data**, not static marketing copy. Each targets a search intent and links back to the main tracker:
+Eleven indexable URLs on logicencoder.com are filled with **live data**, not static marketing copy. WordPress serves local HTML templates; placeholders are replaced from the backend SSR data bundle (refreshed on a short transient cache). Each page targets a search intent and links back to the main tracker:
 
 | Page | URL | Intent |
 |------|-----|--------|
+| Gas hub | [ethereum-gas](https://logicencoder.com/ethereum-gas/) | Overview landing |
 | Fees today | [ethereum-gas-fees-today](https://logicencoder.com/ethereum-gas-fees-today/) | “What do fees look like right now?” |
 | Why fees high | [why-are-ethereum-gas-fees-high](https://logicencoder.com/why-are-ethereum-gas-fees-high/) | Explainers during spikes |
 | Best time | [best-time-to-send-ethereum](https://logicencoder.com/best-time-to-send-ethereum/) | Scheduling sends |
@@ -142,13 +162,13 @@ Eleven indexable URLs on logicencoder.com are filled with **real-time data**, no
 | History | [ethereum-gas-price-history](https://logicencoder.com/ethereum-gas-price-history/) | Long-range charts |
 | Percentiles | [ethereum-gas-percentiles](https://logicencoder.com/ethereum-gas-percentiles/) | Statistical deep dive |
 
-**Embed mode** (`?gt_embed=1`) serves a chromeless view for in-app panels and third-party iframes without WordPress theme chrome.
+**Embed mode** (`?gt_embed=1`) serves a chromeless view for in-app panels and third-party iframes without WordPress theme chrome. The retired `/ethereum-gas-tracker-live/` path returns gone — the canonical live URL is `/ethereum-gas-tracker/`.
 
 ## WordPress embedding
 
-Shortcode **`[eth_gas_dashboard]`** drops the same dashboard shell into any WordPress page or post. The plugin handles routing, **LiteSpeed / full-page cache bypass** (stale gwei on cached HTML is unacceptable), and a REST mirror of the latest payload — **gas math runs on the backend**, not in PHP.
+Shortcode **`[eth_gas_dashboard]`** drops the same dashboard shell into any WordPress page or post. The plugin handles dedicated routing for `/ethereum-gas-tracker/`, **LiteSpeed / full-page cache bypass** on all gas routes (stale gwei on cached HTML is unacceptable), and a REST mirror of the latest payload that the backend can push every block.
 
-Editors embed the live tool inside articles (“check fees below”) without maintaining a separate iframe host.
+Editors embed the live tool inside articles (“check fees below”) without maintaining a separate iframe host. Activation creates the SEO page records and stores their IDs so template routing survives theme changes.
 
 ## Site operator tools
 
@@ -158,17 +178,31 @@ wp-admin **ETH Gas Live** includes **Mission Control** — production observabil
 
 **WebSocket card** — current and max connected clients, total connect/disconnect lifetime counts, messages per minute, broadcast failure counter. If failures climb while clients are high, check network or payload size.
 
-**Fetch + Push card** — RPC fetch success rate, fetch latency (last/avg/max), WordPress push status and latency. Confirms the Python → WordPress mirror path that keeps REST fallback fresh.
+**Fetch + Push card** — RPC fetch success rate, fetch latency (last/avg/max), WordPress push HTTP status and latency. Confirms the Python → WordPress mirror path that keeps REST fallback fresh.
 
 **Database + Cache card** — gas history row count, alert row count, SQLite file sizes (DB/WAL/SHM), history and heatmap cache hit ratios. Low hit ratio after deploy may mean cold cache, not broken ingest.
 
 Three rolling **charts** plot loop cycle ms, fetch latency ms, and WS client count. Expandable **raw monitoring JSON** for copying into tickets. **WordPress cache mirror** footer shows last push timestamp and cached payload key count.
 
-Settings above Mission Control configure API base URL, WebSocket URL, SSR base, push API key, and refresh interval — change endpoints after infra moves without editing code.
+Settings above Mission Control configure API base URL, WebSocket URL, public asset base for CSS rewrite, push API key, and client refresh interval — change endpoints after infra moves without editing code.
 
 ![Mission Control — runtime, WebSocket, fetch/push, and database health](assets/mission-control.png)
 
+## Shared hosting headroom (corroboration)
+
+Logic Encoder publishes the gas tracker on **WordPress shared hosting** — the right layer for shortcodes, SEO pages, cache bypass, and the REST transient mirror, but the wrong place to run block-by-block RPC ingest, SQLite history, WebSocket fan-out, and tier math. From the start the design keeps **WordPress thin**: PHP renders the SPA shell, fills SEO templates from backend JSON, and stores the last pushed payload. Gas computation, history retention, alerts API, heatmap aggregation, and monitoring endpoints run on **self-hosted Linux servers** with async workers — not inside shared-hosting PHP.
+
+Visitors still get sub-block updates over WebSocket with REST and WordPress mirror as fallback; shared hosting mostly **displays and indexes** what the backend already computed. After offloading ingest and fan-out, shared-hosting resource graphs show comfortable margins while the live tracker runs — **corroboration below**, not the product story.
+
+![Shared hosting — CPU and memory usage vs plan limits](assets/hostinger-cpu-memory.jpg)
+
+![Shared hosting — disk throughput and PHP worker count](assets/hostinger-throughput-workers.jpg)
+
+![Shared hosting — storage IOPS and max processes](assets/hostinger-iops-processes.jpg)
+
 Private code: [eth-gas-live-plugin](https://github.com/logicencoder/eth-gas-live-plugin) · live data [eth-gas-live-backend](https://github.com/logicencoder/eth-gas-live-backend)
+
+Backend overview: [eth-gas-live-backend-overview](https://github.com/logicencoder/eth-gas-live-backend-overview)
 
 See [REPOS.md](REPOS.md).
 

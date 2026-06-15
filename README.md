@@ -32,7 +32,7 @@ Backend gas math (three tiers, IPI, heatmap buckets, featured-action costs) neve
 Below the header, a horizontal **topic nav** keeps you inside one app shell instead of cold-loading eleven separate articles.
 
 - **Live App** — the realtime dashboard (network grid, tiers, charts, sidebar tools).
-- **Topic tabs** — fees today, best time to send, mempool, calculator, transaction costs, swap fees, network status, price history, percentiles, and related guides. Labels come from the backend SEO hub manifest; clicking a tab loads that page’s HTML into an **in-app panel** via embed mode (`?gt_embed=1`) while live gas fields stay wired to the same WebSocket stream.
+- **Topic tabs** — **Today**, **Why High?**, **Best Time**, **Calculator**, **Tx Costs**, **Swap Fees**, **Network**, **History**, **Percentiles** (plus related guides from the SEO hub manifest). Labels come from the backend; clicking a tab loads that page’s HTML into an **in-app panel** via embed mode (`?gt_embed=1`) while live gas fields stay wired to the same WebSocket stream.
 - **Back to Live App** — one click hides the guide panel and restores the full dashboard.
 
 Each embedded guide is cached briefly in the browser so switching tabs feels instant; headline numbers inside the panel still sync from the live gas object. Crawlers and direct URL visitors get the same content as full WordPress pages with theme chrome — the in-app panel is the reader-friendly shortcut for people already on the tracker.
@@ -49,25 +49,25 @@ Ethereum post-EIP-1559 pricing is not one number — senders trade off cost vs i
 | **Standard Way** | Balanced default — the tier most users should compare against wallet “medium” estimates. |
 | **Faster Inclusion** | Priority-heavy path when mempools are busy, NFT mints are competitive, or you need the next block. |
 
-Each card shows **gwei** (base + priority breakdown), **ETH and USD estimates** for a reference transfer, and a plain-language **confirmation hint** (“~1 block”, “may take several blocks”, etc.). Cards pulse-update on every WebSocket tick so you watch fees move during a congestion spike without refreshing.
+Each card shows **gwei** (base + priority breakdown), **ETH and USD estimates** for a reference transfer, and a plain-language **confirmation hint** in the top-right corner — typically **~12s (1 block)** for Standard and Faster, **~24s (2 blocks)** for Base Route when the network is calm. Below the headline gwei, **Prio**, **ETH**, and **USD** rows update on every WebSocket tick so you watch fees move during a congestion spike without refreshing.
 
 When Standard is elevated vs its rolling average, the **Gas Intelligence Hub** (sidebar) nudges you toward wait-or-send guidance rather than leaving you to guess from a single red number.
 
-**Example:** your wallet shows three opaque speeds — map **low / medium / high** to **Base Route / Standard Way / Faster Inclusion** here first. Competitive NFT mint with a short window → watch **Faster Inclusion** and **fee competition**; routine ERC-20 send when **network status** is Normal → **Base Route** is usually enough if the confirmation hint allows an extra block.
+**Example:** your wallet shows three opaque speeds — map **low / medium / high** to **Base Route / Standard Way / Faster Inclusion** here first. Competitive NFT mint with a short window → watch **Faster Inclusion** and **fee competition**; routine ERC-20 send when **network status** is **LOW** or **NORMAL** → **Base Route** is usually enough if the **~24s (2 blocks)** hint is acceptable.
 
 ![Three send tiers — Base Route, Standard Way, Faster Inclusion](assets/send-tiers.png)
 
 ### Network statistics
 
-Above the tier cards, a **network statistics grid** answers *why* fees moved — not only *what* they are. Metrics include:
+Above the tier cards, a **network statistics grid** sits under the topic nav bar — twelve KPI cells in a responsive grid. Metrics include:
 
 - **Tx / minute** — estimated from recent blocks; primary activity signal when mempool depth is noisy.
-- **Network status** — Normal / Elevated / High / Spike labels derived from backend stress scoring.
-- **Trend (Standard)** — short-term direction vs the last hour so you see fees climbing before they peak.
+- **Network status** — **LOW**, **NORMAL**, **HIGH**, or **SPIKE** labels derived from backend stress scoring (green **LOW** when conditions are quiet).
+- **Trend (Standard)** — short-term direction with arrow and gwei delta vs the last hour.
 - **Last block** — anchor for staleness checks.
-- **Avg / current block size and utilization** — how full blocks are; high utilization usually means higher competition for space.
+- **Avg / current block size and utilization** — gas used vs block limit, including **% of limit** sublabels on current block.
 - **IPI (Inclusion Pressure Index) 0–100** — single stress score aligned with the Intelligence Hub.
-- **SPIKE score** and **fee competition** — how aggressive other senders are right now (priority spread between high and median tips).
+- **SPIKE score** and **fee competition** — short-term regime vs baseline; **GWEI (P90−P50 tip)** spread for how aggressive other senders are.
 - **Block speed pressure** — share of recent blocks above 90% full, affecting queue drain rate.
 
 Use this panel when Standard jumped but you are unsure if it is a blip (one fat block) or sustained load (climbing tx/min + high utilization).
@@ -193,6 +193,38 @@ Eleven indexable URLs on logicencoder.com are filled with **live data**, not sta
 | Percentiles | [ethereum-gas-percentiles](https://logicencoder.com/ethereum-gas-percentiles/) | Statistical deep dive |
 
 **Embed mode** (`?gt_embed=1`) serves a chromeless view for in-app panels and third-party iframes without WordPress theme chrome. The retired `/ethereum-gas-tracker-live/` path returns gone — the canonical live URL is `/ethereum-gas-tracker/`.
+
+### Gas fees today (SEO page)
+
+The **[ethereum-gas-fees-today](https://logicencoder.com/ethereum-gas-fees-today/)** landing is a dated article-style page filled from live backend data — not static copy. Three tables anchor the page:
+
+- **Today’s Gas Statistics** — today’s average, low/high with UTC hour, yesterday comparison, P50/P80, transaction count, avg block utilization.
+- **Multi-Period Comparison** — today vs yesterday vs **7-day** and **30-day** averages in one row.
+- **Network Intelligence Today** — IPI, spike score, fee competition, block speed pressure, tx/min, network health score, ETH/USD and last-updated footer.
+
+Prose sections below explain how daily patterns work (US/EU business-hour peaks vs overnight lulls). FAQ blocks answer “what are fees today?” in plain language for search snippets.
+
+**Example:** you landed from Google on “gas fees today” — read **Multi-Period Comparison** first: if today sits far above **7-Day Average**, open the live tracker’s **7 Days** chart before sending; click **Live App** in the topic nav to watch tiers update in realtime.
+
+![Gas fees today — statistics tables and network intelligence](assets/seo-gas-fees-today.png)
+
+### Swap gas fees (SEO page)
+
+**[ethereum-swap-gas-fees](https://logicencoder.com/ethereum-swap-gas-fees/)** targets DeFi swap queries. **Swap Costs by Speed** lists Base / Standard / Faster with gwei, swap-only USD, and **total with approve** (first-time DEX users often miss the one-time approval). **Network Intelligence for DeFi** explains IPI, spike score, fee competition, block speed pressure, DeFi activity level, and tx/min with an **Impact** column. **Historical Swap Cost Context** compares 1h / 24h / 7d average swap cost.
+
+Educational sections cover why swaps cost more than transfers (~180k gas), the hidden approve step (~46k gas), and when waiting beats swapping (spike score and IPI thresholds in the copy).
+
+**Example:** planning your first Uniswap trade — read **total with approve** on **Standard Way** before you set slippage; if **Spike Score** impact says consider waiting above 60, defer and set an **UNDER** alert on the live dashboard instead of forcing the swap.
+
+![Swap gas fees — tier table, DeFi intelligence, historical context](assets/seo-swap-gas-fees.png)
+
+### Network status (SEO page)
+
+**[ethereum-network-status](https://logicencoder.com/ethereum-network-status/)** is the health dashboard for “is Ethereum congested?” searches. A **Full Network Intelligence Dashboard** table lists network status, health score, IPI, spike score, fee competition, block speed pressure, block utilization, tx/min, Standard gwei, 24h/7d averages, and timestamp — each with an **Interpretation** column. Long-form copy defines **LOW / NORMAL / HIGH / SPIKE** regimes and what each means for send timing (same scale as the live grid’s **Network status** cell).
+
+**Example:** non-urgent transfer while status reads **HIGH** — read the interpretation for **Block utilization** and **IPI**; if both elevated, use **Best Time** or the heatmap on the live app rather than submitting on **Faster Inclusion** immediately.
+
+![Network status — intelligence dashboard and status-level guide](assets/seo-network-status.png)
 
 ## WordPress embedding
 

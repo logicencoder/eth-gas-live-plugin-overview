@@ -6,7 +6,7 @@
 
 The header shows **connection status**, **last update time**, and **live ETH/USD** so you know the numbers are fresh. The page title and favicon react to current Standard gwei so a pinned tab doubles as an at-a-glance fee indicator without opening the full dashboard.
 
-**Typical flows:** before a wallet send, open Live App → compare your wallet’s “medium” quote to **Standard Way** → if **Send Recommendation** says wait and **IPI** is high, defer or drop to **Base Route**. Planning a DEX swap → **Fee calculator** preset **Swap (DEX)** → cross-check **Common transaction costs** for approve + swap totals. Scheduling a treasury payout → **Gas heatmap** + **Best Time (Last 24h)** → set an **UNDER** alert and go do something else until the browser notification fires. Fees jumped on Twitter → **Network statistics** (tx/min + utilization) → **Why fees high** in the topic nav without losing the live socket. Site feels stale → wp-admin **Mission Control** → **Fetch + Push** card and last push timestamp on the WP mirror footer.
+**Typical flows:** scheduling a non-urgent payout → **Gas heatmap** for cheap weekday/hour pattern → confirm with **Gas price history** on **7 Days** → set **UNDER** alert. Live spike on Twitter → **Network statistics** + **1 Hour** chart (**Raw**) → **Why fees high** in topic nav. Before a wallet send → compare wallet “medium” to **Standard Way** → **Send Recommendation** in the Intelligence Hub. DEX swap → **Fee calculator** + **Common transaction costs** for approve + swap totals. Site stale → wp-admin **Mission Control** → **Fetch + Push** card.
 
 ## Tech stack
 
@@ -76,6 +76,36 @@ Use this panel when Standard jumped but you are unsure if it is a blip (one fat 
 
 ![Network statistics grid on the Live App tab](assets/network-statistics.png)
 
+### Gas price history
+
+The **history chart** sits in the main column directly under the tier cards — the first place to look when today’s fees feel wrong compared to the last hour or the last week. It plots **Base Route**, **Standard Way**, and **Faster Inclusion** over selectable ranges — **1h, 3h, 6h, 12h, 24h, 3 days, 7 days, 30 days**. A secondary axis overlays **average block utilization** so you correlate fee spikes with full blocks.
+
+**Smoothing** — **Raw**, **EMA (5)**, **Median (5)**, or **Clamp 99%** for noisy priority markets. Short ranges (≤6h) stream live over WebSocket; longer ranges load from SQLite history on demand.
+
+**Faster-tier percentile band** — **FIP** readouts (P50, P70, and related chips in the chart footer) show how volatile the priority market is — wide spread means tips swing block to block. Ties back to the **Percentiles** topic tab and SEO page for statistical depth.
+
+**Example — is this spike normal?** Fees jumped in the last half hour → set **1 Hour** + **Raw**, watch **Standard** climb alongside **Avg Utilization** → real congestion. Switch to **7 Days** → if today’s band sits above the weekly cloud, wait or use **Base Route**; if only the last hour is hot, one block of patience often enough.
+
+**Example — mint or bridge deadline:** Open **3 Hours** + **Raw**, watch **Faster Inclusion** vs **Standard** spread widen → mempool is competitive; if the spread is flat, **Standard Way** usually lands without **Faster** pricing. Cross-check **fee competition** in the network grid before you overpay in the wallet.
+
+**Example — batch treasury send:** Set **24 Hours** or **7 Days**, find where **Standard** spent most of its time below your comfort line → line that window up with the **heatmap** below and submit the batch in that band using **Base Route** unless **IPI** is elevated.
+
+![Gas price history chart with tier lines and utilization](assets/gas-price-history.png)
+
+### Gas heatmap
+
+Directly under the history chart, the **heatmap** answers *when* to send — not only *how much* right now. It colors **hourly average Standard Way gas** over the last **seven days** (thirty days when the history range selector is on the **30 Days** window). **Darker cells** = cheaper hours; **brighter cells** = expensive windows.
+
+Hours shift to **your browser timezone** — a cheap European evening shows in local time, not UTC. Hover a cell for the exact hour and average gwei behind the color.
+
+**Example — weekly payroll:** Find the weekday row you usually pay on → note the consistently dark column (same local hour each week) → open the wallet in that window with **Base Route** → skip bright columns that match US/EU business-hour peaks.
+
+**Example — “I'll send when it's cheap” without staring at the tab:** Pick your target hour band from the heatmap → set an **UNDER** alert near the top of that band → allow browser notifications → when the alert fires, confirm on the **1 Hour** chart that fees are still in the cheap band, then submit.
+
+**Example — heatmap + Intelligence Hub:** Dark cell on the heatmap but **Send Recommendation** still says wait → check **IPI** and **Worst Time (Last 24h)** — historical cheap hour does not override an active spike; defer until the hub flips or **SPIKE** drops in the network grid.
+
+![Gas heatmap — hourly Standard Way averages by day](assets/gas-heatmap.png)
+
 ### Gas Intelligence Hub
 
 The sidebar **Gas Intelligence Hub** compresses backend insight into one scrollable panel — for mobile readers who will not expand four charts before sending.
@@ -117,28 +147,6 @@ Each row displays the action name, **gas limit** used for the estimate, and **Ba
 **Example:** three-step DeFi exit — note **Token Approve**, **Swap (DEX)**, and **Bridging** rows at **Standard Way** USD, add the three numbers for a rough total before you open the wallet; if the sum hurts, check whether **Base Route** on the approve step is acceptable while keeping **Faster** only on the swap step.
 
 ![Common transaction costs for transfer and swap actions](assets/transaction-costs.png)
-
-### Gas price history
-
-The **history chart** plots **Base Route**, **Standard Way**, and **Faster Inclusion** over selectable ranges — **1h, 3h, 6h, 12h, 24h, 3 days, 7 days, 30 days**. A secondary axis overlays **average block utilization** so you correlate fee spikes with full blocks.
-
-**Smoothing** — Raw, EMA (5), Median (5), or Clamp 99% for noisy priority markets. Short ranges (≤6h) stream live over WebSocket; longer ranges load from SQLite history on demand.
-
-**Faster-tier percentile band** — **FIP** readouts (P50, P70, and related chips in the chart footer) show how volatile the priority market is — wide spread means tips swing block to block. Ties back to the Percentiles SEO page for search landings.
-
-**Example:** during a spike, set range to **1 Hour**, smoothing **Raw**, watch **Standard** vs **utilization** — if both spike together it is block pressure; switch to **7 Days** afterward to see whether today is an outlier vs the weekly band.
-
-![Gas price history chart with tier lines and utilization](assets/gas-price-history.png)
-
-### Gas heatmap
-
-The **heatmap** colors **hourly average Standard Way gas** over the last **seven days** (thirty days when the history range selector is on the 30-day window). Darker cells = cheaper hours; bright cells = expensive windows.
-
-Hours shift to **your browser timezone** — a European evening cheap window displays in local time, not UTC. Use it to schedule non-urgent sends (treasury payouts, batch claims) without setting a manual alarm. Hover cells show the exact hour and average gwei behind each color.
-
-**Example:** you pay payroll every Tuesday — find the consistently dark (cheap) cells on the same weekday row, line them up with **Best Time (Last 24h)** in the Intelligence Hub, and submit in that window using **Base Route** unless **IPI** says otherwise.
-
-![Gas heatmap — hourly Standard Way averages by day](assets/gas-heatmap.png)
 
 ### Advanced statistics
 

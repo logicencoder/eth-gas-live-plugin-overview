@@ -6,8 +6,6 @@
 
 The header shows **connection status**, **last update time**, and **live ETH/USD** so you know the numbers are fresh. A horizontal **topic nav** links to eleven SEO pages (fees today, best time, calculator, mempool, and more) without leaving the product chrome — each panel loads inside the app shell when you want depth, not a cold navigation to a static article.
 
-Screenshots are **operator-provided crops** at native resolution (featured full-page capture plus per-tab PNGs) — not downscaled chat attachments.
-
 ## Tech stack
 
 | Layer | Technologies |
@@ -125,7 +123,7 @@ Three in-app sub-tabs for researchers who want tables, not only charts:
 
 ### Custom alerts
 
-Set a **gwei threshold** above or below Standard and optionally enable **browser notifications**. Alerts persist per browser session so overnight fee drops ping you without keeping the tab focused — handy for “wake me when Base &lt; 5 gwei” workflows. Backend stores alert rows; the UI shows active rules and last trigger time.
+Set a **gwei threshold** above or below Standard and optionally enable **browser notifications**. Alerts persist per browser session so overnight fee drops ping you without keeping the tab focused — handy for “notify me when fees drop below my target” workflows. Backend stores alert rows; the UI shows active rules and last trigger time.
 
 ## SEO topic pages
 

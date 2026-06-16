@@ -252,9 +252,9 @@ Settings above Mission Control configure API base URL, WebSocket URL, public ass
 
 ![Mission Control — runtime, WebSocket, fetch/push, and database health](assets/mission-control.png)
 
-## Shared hosting headroom (corroboration)
+## Shared hosting headroom
 
-Gas math and WebSocket fan-out run off shared hosting; WordPress only serves the SPA shell, SEO templates, and the REST mirror. After offloading ingest and fan-out, shared-hosting CPU and memory stay well below plan limits while the live tracker runs — **corroboration below**, not part of the product UI.
+Gas math and WebSocket fan-out run off shared hosting; WordPress only serves the SPA shell, SEO templates, and the REST mirror. After offloading ingest and fan-out, shared-hosting CPU and memory stay well below plan limits while the live tracker runs.
 
 ![Shared hosting — CPU and memory usage vs plan limits](assets/hostinger-cpu-memory.jpg)
 

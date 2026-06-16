@@ -41,7 +41,7 @@ Each embedded guide is cached briefly in the browser so switching tabs feels ins
 
 ### Three send tiers
 
-Ethereum post-EIP-1559 pricing is not one number — senders trade off cost vs inclusion speed. The product surfaces **three named tiers** instead of opaque wallet labels:
+Ethereum post-EIP-1559 pricing combines base fee and priority tips — senders trade off cost vs inclusion speed. The product surfaces **three named tiers** with clear labels:
 
 | Tier | Role |
 |------|------|
@@ -94,9 +94,9 @@ The **history chart** sits in the main column directly under the tier cards — 
 
 ### Gas heatmap
 
-Directly under the history chart, the **heatmap** answers *when* to send — not only *how much* right now. It colors **hourly average Standard Way gas** over the last **seven days** (thirty days when the history range selector is on the **30 Days** window). **Darker cells** = cheaper hours; **brighter cells** = expensive windows.
+Directly under the history chart, the **heatmap** answers *when* to send as well as *how much* right now. It colors **hourly average Standard Way gas** over the last **seven days** (thirty days when the history range selector is on the **30 Days** window). **Darker cells** = cheaper hours; **brighter cells** = expensive windows.
 
-Hours shift to **your browser timezone** — a cheap European evening shows in local time, not UTC. Hover a cell for the exact hour and average gwei behind the color.
+Hours shift to **your browser timezone** — a cheap European evening shows in local time rather than UTC. Hover a cell for the exact hour and average gwei behind the color.
 
 **Example — weekly payroll:** Find the weekday row you usually pay on → note the consistently dark column (same local hour each week) → open the wallet in that window with **Base Route** → skip bright columns that match US/EU business-hour peaks.
 
@@ -126,7 +126,7 @@ The hub recomputes on every payload tick using the same backend scoring as chart
 
 ### Fee calculator
 
-The **fee calculator** answers “how much will *my* transaction cost?” — not just the reference transfer on the tier cards.
+The **fee calculator** answers “how much will *my* transaction cost?” beyond the reference transfer on the tier cards.
 
 - **Gas limit presets** — ETH transfer, ERC-20 transfer, DEX swap, token approve, NFT mint, NFT sale; or type a custom limit if you know units from a contract simulation.
 - **Tier selector** — price from Base Route, Standard Way, Faster Inclusion, or **custom gwei** for what-if scenarios; “Auto (Standard)” tracks live Standard when you do not want to babysit the field.
@@ -150,7 +150,7 @@ Each row displays the action name, **gas limit** used for the estimate, and **Ba
 
 ### Advanced statistics
 
-Three in-app sub-tabs for researchers who want tables, not only charts:
+Three in-app sub-tabs for researchers who want tables alongside the charts:
 
 **Overview** — current, min, max, average, and median gwei per tier for the selected history window. Quick answer to “how bad was today vs the week?”
 
@@ -176,7 +176,7 @@ Alerts are stored per **browser session** on the backend; the list shows active 
 
 ## SEO topic pages
 
-Eleven indexable URLs on logicencoder.com are filled with **live data**, not static marketing copy. WordPress serves local HTML templates; placeholders are replaced from the backend SSR data bundle (refreshed on a short transient cache). Each page targets a search intent and links back to the main tracker:
+Eleven indexable URLs on logicencoder.com are filled with **live data** from the backend bundle. WordPress serves local HTML templates; placeholders are replaced from the backend SSR data bundle (refreshed on a short transient cache). Each page targets a search intent and links back to the main tracker:
 
 | Page | URL | Intent |
 |------|-----|--------|
@@ -196,7 +196,7 @@ Eleven indexable URLs on logicencoder.com are filled with **live data**, not sta
 
 ### Gas fees today (SEO page)
 
-The **[ethereum-gas-fees-today](https://logicencoder.com/ethereum-gas-fees-today/)** landing is a dated article-style page filled from live backend data — not static copy. Three tables anchor the page:
+The **[ethereum-gas-fees-today](https://logicencoder.com/ethereum-gas-fees-today/)** landing is a dated article-style page filled from live backend data on each publish. Three tables anchor the page:
 
 - **Today’s Gas Statistics** — today’s average, low/high with UTC hour, yesterday comparison, P50/P80, transaction count, avg block utilization.
 - **Multi-Period Comparison** — today vs yesterday vs **7-day** and **30-day** averages in one row.

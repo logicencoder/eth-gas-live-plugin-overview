@@ -266,4 +266,57 @@ See [REPOS.md](REPOS.md).
 
 ---
 
+## Feature examples (two per capability)
+
+#### Live dashboard shortcode embed
+1. You add `[eth_gas_dashboard]` to a WordPress page so visitors get the full gas tracker without a separate app URL.
+2. You embed the shortcode below a “how to send ETH” article so readers check live tiers in context.
+
+#### Canonical live tracker page
+1. You open `/ethereum-gas-tracker/` and tier cards paint before the WebSocket handshake finishes thanks to boot cache.
+2. You pin the tab and watch the page title update with current Standard gwei as a background fee indicator.
+
+#### Three send tiers and network grid
+1. You compare Base Route, Standard Way, and Faster Inclusion side by side before choosing a wallet speed preset.
+2. You scan tx/min, IPI, and utilization together when Standard jumps to see if congestion is sustained or a one-block spike.
+
+#### History chart and heatmap
+1. You set history to **7 Days** with **Raw** smoothing to see whether today’s fees sit above the weekly band.
+2. You find the darkest heatmap hour in your timezone and schedule a batch payout for that recurring cheap window.
+
+#### Gas Intelligence Hub and fee calculator
+1. You read Send Recommendation and compare current Standard gwei to the 24h average before clicking send in your wallet.
+2. You pick the **Swap (DEX)** preset on the calculator and switch tier to Faster Inclusion to price a priority mint.
+
+#### Featured transaction costs
+1. You scroll nineteen action rows and add approve, swap, and bridge Standard Way USD figures for a three-step DeFi exit.
+2. You compare Base and Faster on the same row when you want cheap approval but a priority swap.
+
+#### Advanced statistics and alerts
+1. You open **Overview** for min, max, and median per tier when you need a quick “how bad was today?” answer.
+2. You set an **UNDER** threshold, allow browser notifications, and submit your batch payout when the toast fires.
+
+#### SEO indexable pages
+1. You land from search on **Gas fees today** and read comparison tables filled from live backend placeholders.
+2. You open **Swap gas fees** and read total-with-approve on Standard Way before you approve a token in your wallet.
+
+#### Embed mode and cache bypass
+1. You click a topic tab and the app loads chromeless embed HTML while live fields still sync from the gas stream.
+2. You purge LiteSpeed after deploy and still get fresh tiers because gas routes bypass full-page cache.
+
+#### Mission Control observability (operator)
+1. You open **ETH Gas Live** in wp-admin, click **Refresh Now**, and read loop timing when users report stale tiers.
+2. You watch Fetch + Push cards for failed WordPress push or rising fetch latency before touching PHP.
+
+#### Mission Control database and JSON (operator)
+1. You check Database + Cache hit ratios after a deploy to see whether history caches are still cold.
+2. You expand Raw Monitoring JSON and copy the snapshot into a ticket when broadcast failures climb.
+
+#### Integration settings (operator)
+1. You update Backend API Base URL and WebSocket URL after a tunnel move and save without editing plugin files.
+2. You copy the push API key into the backend environment so the mirror path stays authenticated.
+
+
+---
+
 **Made by [Logic Encoder](https://logicencoder.com)** · [GitHub](https://github.com/logicencoder) · [Contact](https://logicencoder.com/contact/)

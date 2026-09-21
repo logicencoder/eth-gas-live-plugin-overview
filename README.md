@@ -266,7 +266,7 @@ See [REPOS.md](REPOS.md).
 
 ---
 
-## Feature examples (two per capability)
+## Operator workflows
 
 #### Live dashboard shortcode embed
 1. You add `[eth_gas_dashboard]` to a WordPress page so visitors get the full gas tracker without a separate app URL.

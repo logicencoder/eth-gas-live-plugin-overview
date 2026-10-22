@@ -55,7 +55,7 @@ The intelligence hub and advanced statistics provide more detail for visitors wh
 
 ## Publish and operate the experience
 
-WordPress embedding and site-operator tools support making the dashboard part of a wider site. Mission Control helps inspect the operating state. Public presentation should show those capabilities without exposing the connection wiring or deployment arrangement.
+WordPress embedding and site-operator tools support making the dashboard part of a wider site. Mission Control helps inspect the operating state.
 
 ![ETH Gas Live — Publish and operate the experience](assets/mission-control.png)
 

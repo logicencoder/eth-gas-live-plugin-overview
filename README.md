@@ -1,88 +1,65 @@
 # ETH Gas Live
 
-![ETH Gas Live dashboard](assets/live-dashboard.png)
+![ETH Gas Live workspace](assets/live-dashboard.png)
 
-**Live Ethereum gas intelligence** on Logic Encoder — see what a send costs right now, compare three practical send tiers, and decide whether to submit or wait. Open [logicencoder.com/ethereum-gas-tracker/](https://logicencoder.com/ethereum-gas-tracker/) in the browser. Built for senders, swappers, and NFT minters who want more than a wallet’s single high/medium/low guess — especially when timing a transaction around congestion spikes, listing mints, or bridge hops where a few gwei difference is real money at scale.
-
-The header shows **connection status**, **last update time**, and **live ETH/USD** so you know the numbers are fresh. The page title and favicon react to current Standard gwei so a pinned tab doubles as an at-a-glance fee indicator without opening the full dashboard.
-
-**Typical flows:** scheduling a non-urgent payout → **Gas heatmap** for cheap weekday/hour pattern → confirm with **Gas price history** on **7 Days** → set **UNDER** alert. Live spike on Twitter → **Network statistics** + **1 Hour** chart (**Raw**) → **Why fees high** in topic nav. Before a wallet send → compare wallet “medium” to **Standard Way** → **Send Recommendation** in the Intelligence Hub. DEX swap → **Fee calculator** + **Common transaction costs** for approve + swap totals. Site stale → wp-admin **Mission Control** → **Fetch + Push** card.
+A gas quote is more useful when it helps answer a practical question: what might this transaction cost, and how does the current situation compare with recent conditions? ETH Gas Live brings live estimates, history and planning tools into one Ethereum dashboard.
 
 ## Tech stack
 
 | Layer | Technologies |
-|-------|--------------|
-| WordPress plugin | PHP, WordPress REST API, shortcodes, wp-admin Mission Control, LiteSpeed cache bypass |
-| Public SPA | HTML, CSS, vanilla JavaScript (`gas_tracker.html`), Tailwind CSS, Chart.js |
-| Live backend | Python 3, FastAPI, uvicorn, web3.py, aiohttp, websockets, pydantic, orjson, SQLite |
-| SEO data | WordPress local HTML templates with `{{PLACEHOLDER}}` keys filled from backend `GET /api/gas/ssr-data`; Node.js Express SSR on the backend for proxied crawler routes |
-| Data | WordPress MySQL (options/transients), SQLite gas history (~30 days) on the backend |
-| Realtime | WebSocket (`/ws/gas`), REST bootstrap and analytics endpoints, backend push to WordPress transient mirror |
-| Networking | Cloudflare tunnel, Ethereum JSON-RPC / mempool feeds |
-| Hosting | WordPress on shared hosting; Python and Node on self-hosted Linux servers |
+|---|---|
+| Application | PHP, WordPress |
+| Supporting technologies | HTML, CSS, JavaScript; Chart.js; Ethereum |
 
-## Live dashboard
+## Read current transaction conditions
 
-The main app is a full-screen **gas tracker** with the **Live App** tab as home base. Data refreshes over **WebSocket** on every new block when the browser can connect; if a corporate network blocks WS, REST polling plus the WordPress transient mirror still updates headline tiers every few seconds. On first load the SPA bootstraps from REST so tier cards paint before the socket handshake completes.
+The main dashboard and send tiers give visitors an accessible view of current fee conditions. Network statistics add context to the estimate, while topic navigation helps explain the terms being shown. The aim is to support a decision rather than present an isolated number.
 
-Backend gas math (three tiers, IPI, heatmap buckets, featured-action costs) never runs in PHP — WordPress serves the shell, injects API and WebSocket URLs, and mirrors the latest payload for fallback readers.
+Base, Standard and Faster tiers give visitors a way to compare transaction choices. Reading them alongside network activity is more useful than treating one headline gas value as the whole picture.
 
-### Topic navigation and in-app guides
+![ETH Gas Live — Read current transaction conditions](assets/send-tiers.png)
 
-Below the header, a horizontal **topic nav** keeps you inside one app shell instead of cold-loading eleven separate articles.
+Network statistics add activity and utilisation context to the selected fee tiers. They help the visitor examine the conditions surrounding a proposed transaction instead of relying on price alone.
 
-- **Live App** — the realtime dashboard (network grid, tiers, charts, sidebar tools).
-- **Topic tabs** — **Today**, **Why High?**, **Best Time**, **Calculator**, **Tx Costs**, **Swap Fees**, **Network**, **History**, **Percentiles** (plus related guides from the SEO hub manifest). Labels come from the backend; clicking a tab loads that page’s HTML into an **in-app panel** via embed mode (`?gt_embed=1`) while live gas fields stay wired to the same WebSocket stream.
-- **Back to Live App** — one click hides the guide panel and restores the full dashboard.
+![ETH Gas Live — Read current transaction conditions](assets/network-statistics.png)
 
-Each embedded guide is cached briefly in the browser so switching tabs feels instant; headline numbers inside the panel still sync from the live gas object. Crawlers and direct URL visitors get the same content as full WordPress pages with theme chrome — the in-app panel is the reader-friendly shortcut for people already on the tracker.
+## Compare recent patterns
 
 When fees spike on social media — stay on **Live App**, click **Why fees high** or **Mempool** in the topic nav, read the explainer in the in-panel mount while tier cards keep updating; click **Live App** again to send when **Send Recommendation** flips favorable.
 
-### Three send tiers
+Use recent history for the current session and a wider view when reviewing recurring patterns. The heatmap complements the time series by making periods easier to compare visually.
 
 Ethereum post-EIP-1559 pricing combines base fee and priority tips — senders trade off cost vs inclusion speed. The product surfaces **three named tiers** with clear labels:
 
-| Tier | Role |
-|------|------|
-| **Base Route** | Lowest practical fee — targets economical sends when the network is calm and you can wait an extra block or two. |
-| **Standard Way** | Balanced default — the tier most users should compare against wallet “medium” estimates. |
-| **Faster Inclusion** | Priority-heavy path when mempools are busy, NFT mints are competitive, or you need the next block. |
+The heatmap organises historical conditions into a pattern that is easier to scan across periods. Use it to identify intervals for a closer look in the corresponding history.
 
-Each card shows **gwei** (base + priority breakdown), **ETH and USD estimates** for a reference transfer, and a plain-language **confirmation hint** in the top-right corner — typically **~12s (1 block)** for Standard and Faster, **~24s (2 blocks)** for Base Route when the network is calm. Below the headline gwei, **Prio**, **ETH**, and **USD** rows update on every WebSocket tick so you watch fees move during a congestion spike without refreshing.
+![ETH Gas Live — Compare recent patterns](assets/gas-heatmap.png)
 
-When Standard is elevated vs its rolling average, the **Gas Intelligence Hub** (sidebar) nudges you toward wait-or-send guidance rather than leaving you to guess from a single red number.
+## Estimate a specific task
 
 When your wallet shows three opaque speeds — map **low / medium / high** to **Base Route / Standard Way / Faster Inclusion** here first. Competitive NFT mint with a short window → watch **Faster Inclusion** and **fee competition**; routine ERC-20 send when **network status** is **LOW** or **NORMAL** → **Base Route** is usually enough if the **~24s (2 blocks)** hint is acceptable.
 
-![Three send tiers — Base Route, Standard Way, Faster Inclusion](assets/send-tiers.png)
+A calculator is most useful when it connects the current fee conditions with the action being planned. Common transaction examples provide a starting point for estimating the relevant task.
 
-### Network statistics
+![ETH Gas Live — Estimate a specific task](assets/fee-calculator.png)
 
-Above the tier cards, a **network statistics grid** sits under the topic nav bar — twelve KPI cells in a responsive grid. Metrics include:
+Common transaction-cost views connect the fee information with familiar Ethereum actions. They help a visitor compare tasks whose resource requirements differ.
 
-- **Tx / minute** — estimated from recent blocks; primary activity signal when mempool depth is noisy.
-- **Network status** — **LOW**, **NORMAL**, **HIGH**, or **SPIKE** labels derived from backend stress scoring (green **LOW** when conditions are quiet).
-- **Trend (Standard)** — short-term direction with arrow and gwei delta vs the last hour.
-- **Last block** — anchor for staleness checks.
-- **Avg / current block size and utilization** — gas used vs block limit, including **% of limit** sublabels on current block.
-- **IPI (Inclusion Pressure Index) 0–100** — single stress score aligned with the Intelligence Hub.
-- **SPIKE score** and **fee competition** — short-term regime vs baseline; **GWEI (P90−P50 tip)** spread for how aggressive other senders are.
-- **Block speed pressure** — share of recent blocks above 90% full, affecting queue drain rate.
+![ETH Gas Live — Estimate a specific task](assets/transaction-costs.png)
 
-Use this panel when Standard jumped but you are unsure if it is a blip (one fat block) or sustained load (climbing tx/min + high utilization).
+## Explore deeper statistics
 
 Standard spiked in the last ten minutes — if **tx/min** and **current utilization** climbed together and **SPIKE** is elevated, treat it as real congestion; if only **last block** is fat while averages stay calm, wait one block before overpaying on **Faster Inclusion**.
 
-![Network statistics grid on the Live App tab](assets/network-statistics.png)
+Visitors who need more detail can continue into the intelligence, timing and network views. Alerts provide a way to return when a chosen condition matters rather than watching the dashboard continuously.
 
-### Gas price history
+![ETH Gas Live — Explore deeper statistics](assets/gas-intelligence-hub.png)
 
-The **history chart** sits in the main column directly under the tier cards — the first place to look when today’s fees feel wrong compared to the last hour or the last week. It plots **Base Route**, **Standard Way**, and **Faster Inclusion** over selectable ranges — **1h, 3h, 6h, 12h, 24h, 3 days, 7 days, 30 days**. A secondary axis overlays **average block utilization** so you correlate fee spikes with full blocks.
+The statistics overview provides another entry point into the current network picture. It brings the measures used for a broader investigation into one readable view.
 
-**Smoothing** — **Raw**, **EMA (5)**, **Median (5)**, or **Clamp 99%** for noisy priority markets. Short ranges (≤6h) stream live over WebSocket; longer ranges load from SQLite history on demand.
+![ETH Gas Live — Explore deeper statistics](assets/advanced-stats-overview.png)
 
-**Faster-tier percentile band** — **FIP** readouts (P50, P70, and related chips in the chart footer) show how volatile the priority market is — wide spread means tips swing block to block. Ties back to the **Percentiles** topic tab and SEO page for statistical depth.
+Detailed statistics support the questions that the headline tiers cannot answer alone. Continue into these views when a change in conditions needs more context.
 
 Fees jumped in the last half hour → set **1 Hour** + **Raw**, watch **Standard** climb alongside **Avg Utilization** → real congestion. Switch to **7 Days** → if today’s band sits above the weekly cloud, wait or use **Base Route**; if only the last hour is hot, one block of patience often enough.
 
@@ -90,9 +67,9 @@ Open **3 Hours** + **Raw**, watch **Faster Inclusion** vs **Standard** spread wi
 
 Set **24 Hours** or **7 Days**, find where **Standard** spent most of its time below your comfort line → line that window up with the **heatmap** below and submit the batch in that band using **Base Route** unless **IPI** is elevated.
 
-![Gas price history chart with tier lines and utilization](assets/gas-price-history.png)
+The dedicated gas-fees page gives readers a topic-focused way to approach the tracker. It connects the explanation with the current information relevant to that question.
 
-### Gas heatmap
+![ETH Gas Live — Explore deeper statistics](assets/seo-gas-fees-today.png)
 
 Directly under the history chart, the **heatmap** answers *when* to send as well as *how much* right now. It colors **hourly average Standard Way gas** over the last **seven days** (thirty days when the history range selector is on the **30 Days** window). **Darker cells** = cheaper hours; **brighter cells** = expensive windows.
 
@@ -104,11 +81,11 @@ Pick your target hour band from the heatmap → set an **UNDER** alert near the 
 
 Dark cell on the heatmap but **Send Recommendation** still says wait → check **IPI** and **Worst Time (Last 24h)** — historical cheap hour does not override an active spike; defer until the hub flips or **SPIKE** drops in the network grid.
 
-![Gas heatmap — hourly Standard Way averages by day](assets/gas-heatmap.png)
+WordPress embedding and site-operator tools support making the dashboard part of a wider site. Mission Control helps inspect the operating state.
 
-### Gas Intelligence Hub
+The operator can review the state of the published dashboard separately from the visitor's fee-planning task. This keeps maintenance information available without turning the public experience into an administration screen.
 
-The sidebar **Gas Intelligence Hub** compresses backend insight into one scrollable panel — for mobile readers who will not expand four charts before sending.
+![ETH Gas Live — Publish and operate the experience](assets/mission-control.png)
 
 **Insight** — one-sentence network readout tied to current IPI and spike state (plain language, not raw numbers only).
 
@@ -266,4 +243,8 @@ See [REPOS.md](REPOS.md).
 
 ---
 
-**Made by [Logic Encoder](https://logicencoder.com)** · [GitHub](https://github.com/logicencoder) · [Contact](https://logicencoder.com/contact/)
+Private code: [eth-gas-live-plugin](https://github.com/logicencoder/eth-gas-live-plugin)
+
+See [REPOS.md](REPOS.md) for related repositories.
+
+**[Logic Encoder](https://logicencoder.com)** · [GitHub](https://github.com/logicencoder) · [Contact](https://logicencoder.com/contact/)
